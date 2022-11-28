@@ -1,0 +1,34 @@
+package com.codiis.amazon.pages;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+import com.codiis.amazon.testBase.testBase;
+
+public class signInPage extends testBase {
+
+	@FindBy(id="ap_email")
+	WebElement LoginTextBox;
+	
+	@FindBy(id="ap_password")
+	WebElement PasswordTextBox;
+	
+	@FindBy(id="continue")
+	WebElement ContinueButton;
+	
+	@FindBy(id="signInSubmit")
+	WebElement SignInButton;
+	
+	public signInPage() {
+		PageFactory.initElements(driver, this);
+	}
+	
+	public homePage NavigateHomePage() {
+		LoginTextBox.sendKeys(prop.getProperty("username"));
+		ContinueButton.click();
+		PasswordTextBox.sendKeys(prop.getProperty("password"));
+		SignInButton.click();
+		return new homePage();
+	}
+}

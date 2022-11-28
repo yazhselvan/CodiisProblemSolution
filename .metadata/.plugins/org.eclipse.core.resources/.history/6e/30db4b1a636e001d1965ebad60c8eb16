@@ -1,0 +1,44 @@
+package com.codiis.amazon.pages;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+import com.codiis.amazon.testBase.testBase;
+
+public class LaunchPage extends testBase{
+	
+	@FindBy(id="nav-link-accountList-nav-line-1")
+	WebElement SignInButton;
+	
+	@FindBy(id="twotabsearchtextbox")
+	WebElement SearchTextBox;
+	
+	@FindBy(id="nav-search-submit-button")
+	WebElement SearchSubmit;
+	
+	public LaunchPage() {
+		PageFactory.initElements(driver, this);
+	}
+	
+	public SignInPage NavigateSignIn() {
+		SignInButton.click();
+		return new SignInPage();
+	}
+	
+	public String getUserName() {
+		String FullText = SignInButton.getText();
+		String separator = ", ";
+		int SeparatorIndex = FullText.indexOf(separator);
+		String username = FullText.substring(SeparatorIndex+separator.length());
+		System.out.println(username);
+		return username;
+	}
+	
+	public SearchResultsPage SearchProduct(String Product) {
+		SearchTextBox.sendKeys(Product);
+		SearchTextBox.click();
+		return new SearchResultsPage();
+	}
+
+}

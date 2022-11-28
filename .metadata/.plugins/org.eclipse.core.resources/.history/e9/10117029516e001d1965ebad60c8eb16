@@ -1,0 +1,38 @@
+package com.codiis.amazon.test;
+
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.codiis.amazon.pages.LaunchPage;
+import com.codiis.amazon.pages.SignInPage;
+import com.codiis.amazon.testBase.testBase;
+
+public class LaunchPageTest extends testBase {
+	
+	LaunchPage lp;
+	SignInPage sp;
+	
+	public LaunchPageTest() {
+		super();
+	}
+	
+	@BeforeMethod
+	public void setUp() {
+		Initialization();
+	}
+	
+	@Test
+	public void ValidateSignIn() {
+		lp = new LaunchPage();
+		sp = lp.NavigateSignIn();
+		sp.NavigateHomePage(prop.getProperty("username"), prop.getProperty("password"));
+	}
+	
+	@AfterMethod
+	public void tearDown() {
+		driver.quit();
+	}
+
+}

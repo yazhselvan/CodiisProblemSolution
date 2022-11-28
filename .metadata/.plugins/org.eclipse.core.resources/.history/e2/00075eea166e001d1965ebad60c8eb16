@@ -1,0 +1,23 @@
+package com.codiis.amazon.pages;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+import com.codiis.amazon.testBase.testBase;
+
+public class LaunchPage extends testBase{
+	
+	@FindBy(id="nav-link-accountList-nav-line-1")
+	WebElement SignInButton;
+	
+	public LaunchPage() {
+		PageFactory.initElements(driver, this);
+	}
+	
+	public signInPage NavigateSignIn() {
+		SignInButton.click();
+		return new signInPage();
+	}
+
+}

@@ -1,0 +1,32 @@
+package com.codiis.amazon.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+import com.codiis.amazon.testBase.testBase;
+
+public class SearchResultsPage extends testBase {
+	
+	@FindBy(id="s-result-sort-select")
+	WebElement SortByFilter;
+	
+	@FindBy(xpath = "//span[text()='See more']")
+	WebElement SeeMoreExpander;
+	
+	public SearchResultsPage() {
+		PageFactory.initElements(driver, this);
+	}
+	
+	public WebElement SelectBrand(String BrandName) {
+		SeeMoreExpander.click();
+		String BrandCheckbox = "//span[text()='" + BrandName + "']/ancestor::span[@class='a-list-item'][1]//input[@type='checkbox']";
+		By brandNameSelect = By.xpath(BrandCheckbox);
+		WebElement BrandNameSelect = driver.findElement(brandNameSelect);
+		return BrandNameSelect;
+	}
+	
+	
+
+}

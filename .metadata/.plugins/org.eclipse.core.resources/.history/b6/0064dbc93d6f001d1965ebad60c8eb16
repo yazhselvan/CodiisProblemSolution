@@ -1,0 +1,57 @@
+package com.codiis.amazon.test;
+
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.codiis.amazon.pages.LaunchPage;
+import com.codiis.amazon.pages.CartPage;
+import com.codiis.amazon.pages.SearchResultsPage;
+import com.codiis.amazon.pages.SignInPage;
+import com.codiis.amazon.testBase.testBase;
+
+public class LaunchPageTest extends testBase {
+	
+	LaunchPage launchPage;
+	SignInPage signInPage;
+	SearchResultsPage searchResults;
+	CartPage cartPage;
+	
+	public LaunchPageTest() {
+		super();
+	}
+	
+	@BeforeMethod
+	public void setUp() {
+		Initialization();
+	}
+	
+	@Test
+	public void ValidateSignIn() {
+		launchPage = new LaunchPage();
+		signInPage = launchPage.NavigateSignIn();
+		signInPage.NavigateHomePage(prop.getProperty("username"), prop.getProperty("password"));
+		launchPage.getUserName();
+		searchResults = launchPage.SearchProduct(prop.getProperty("SearchItem"));
+		searchResults.SoryByExpensive();
+		searchResults.SelectPrinceRange("Over ₹20,000");
+		
+		for (int i=0; i<searchResults.ProductList().size(); i++) {
+			searchResults.ClickSeeMore();
+			searchResults.SelectBrand(searchResults.ProductList().get(i)).click();
+			searchResults.ValidateProduct(searchResults.ProductList().get(i));
+			searchResults.AddItemstoCart();
+		}
+		
+		cartPage = searchResults.NavigateCartpage();
+		cartPage.DeleteSecondItem();		
+		cartPage.ClickProceedtoBuy();
+	}
+	
+	@AfterMethod
+	public void tearDown() {
+		driver.quit();
+	}
+
+}

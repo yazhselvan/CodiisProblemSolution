@@ -1,0 +1,84 @@
+package com.codiis.amazon.test;
+
+
+import java.io.IOException;
+
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.codiis.amazon.pages.LaunchPage;
+import com.codiis.amazon.pages.CartPage;
+import com.codiis.amazon.pages.SearchResultsPage;
+import com.codiis.amazon.pages.SignInPage;
+import com.codiis.amazon.testBase.testBase;
+import com.codiis.amazon.util.testUtil;
+
+public class AmazonEnd2EndTest extends testBase {
+	
+	LaunchPage launchPage;
+	SignInPage signInPage;
+	SearchResultsPage searchResults;
+	CartPage cartPage;
+	
+	public AmazonEnd2EndTest() {
+		super();
+	}
+	
+	@BeforeTest
+	public void InitiateReporting() {
+		testUtil.setExtent("AmazonTest");
+		
+	}
+	
+	@BeforeMethod
+	public void setUp() {
+		Initialization();
+	}
+	
+	@DataProvider
+	public Object[][] getTestData() {
+		Object data[][] = testUtil.getTestData("TestData");
+		return data;
+	}
+	
+	@Test(dataProvider = "getTestData")
+	public void CompleteEnd2End(String LoginID, String Password, 
+			String SearchItem, String ProductRange, String ScenarioType) {
+		testUtil.extentTest = testUtil.extent.startTest(ScenarioType);
+		launchPage = new LaunchPage();
+		signInPage = launchPage.NavigateSignIn();
+		signInPage.NavigateHomePage(LoginID, Password);
+		launchPage.getUserName();
+		searchResults = launchPage.SearchProduct(SearchItem);
+		searchResults.SoryByExpensive();
+		searchResults.SelectPrinceRange(ProductRange);
+		
+		for (int i=0; i<searchResults.ProductList().size(); i++) {
+			searchResults.ClickSeeMore();
+			searchResults.SelectBrand(searchResults.ProductList().get(i)).click();
+			searchResults.ValidateProduct(searchResults.ProductList().get(i));
+			searchResults.AddItemstoCart();
+		}
+		
+		cartPage = searchResults.NavigateCartpage();
+		cartPage.DeleteSecondItem();		
+		cartPage.ClickProceedtoBuy();
+	}
+	
+	@AfterMethod
+	public void tearDown(ITestResult result) throws IOException {
+		testUtil.TestClosureReport(result);
+		driver.quit();
+	}
+	
+	@AfterTest
+	public void CloseExtent() {
+		testUtil.endReport();
+	}
+
+}

@@ -1,0 +1,34 @@
+package com.codiis.amazon.testBase;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.openqa.selenium.WebDriver;
+
+public class testBase {
+	
+	public static Properties prop;
+	public static WebDriver driver;
+
+	public testBase() {
+		try {
+			 prop = new Properties();
+			 FileInputStream ip = new FileInputStream("D:\\SimpliLearn\\Phase 2 Project\\"
+			 		+ "E2EScenarios-POM\\src\\main\\java\\com\\qa\\swiggy\\config\\config.properties");
+			 prop.load(ip);
+			}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void Initialization() {
+		
+	}
+	
+}

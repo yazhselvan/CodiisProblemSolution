@@ -1,0 +1,97 @@
+package com.codiis.amazon.test;
+
+
+import java.io.IOException;
+
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.codiis.amazon.pages.LaunchPage;
+import com.codiis.amazon.pages.CartPage;
+import com.codiis.amazon.pages.SearchResultsPage;
+import com.codiis.amazon.pages.SignInPage;
+import com.codiis.amazon.testBase.testBase;
+import com.codiis.amazon.util.testUtil;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class AmazonEnd2EndTest extends testBase {
+	
+	LaunchPage launchPage;
+	SignInPage signInPage;
+	SearchResultsPage searchResults;
+	CartPage cartPage;
+	
+	public AmazonEnd2EndTest() {
+		super();
+	}
+	
+	@BeforeTest
+	public void InitiateReporting() {
+		testUtil.setExtent("AmazonTest");
+		
+	}
+	
+	@BeforeMethod
+	public void setUp() {
+		Initialization();
+	}
+	
+	@DataProvider
+	public Object[][] getTestData() {
+		Object data[][] = testUtil.getTestData("TestData");
+		return data;
+	}
+	
+	@Test(dataProvider = "getTestData")
+	public void CompleteEnd2End(String LoginID, String Password, 
+			String SearchItem, String ProductRange, String ScenarioType) {
+		testUtil.extentTest = testUtil.extent.startTest(ScenarioType);
+		testUtil.extentTest.log(LogStatus.INFO, "Opening Amazon Launch Page");
+		launchPage = new LaunchPage();
+		signInPage = launchPage.NavigateSignIn();
+		testUtil.extentTest.log(LogStatus.INFO, "navigated to sign in page");
+		signInPage.NavigateHomePage(LoginID, Password);
+		testUtil.extentTest.log(LogStatus.INFO, "Logging in...");
+		launchPage.getUserName();
+		testUtil.extentTest.log(LogStatus.INFO, "Logged in successfully");
+		searchResults = launchPage.SearchProduct(SearchItem);
+		testUtil.extentTest.log(LogStatus.INFO, "Searhed for " + SearchItem + " and Search Results are returned");
+		searchResults.SoryByExpensive();
+		testUtil.extentTest.log(LogStatus.INFO, "Sorted as High to Low");
+		searchResults.SelectPrinceRange(ProductRange);
+		testUtil.extentTest.log(LogStatus.INFO, "Selected " + ProductRange);
+		
+		for (int i=0; i<searchResults.ProductList().size(); i++) {
+			searchResults.ClickSeeMore();
+			searchResults.SelectBrand(searchResults.ProductList().get(i)).click();
+			testUtil.extentTest.log(LogStatus.INFO, "Selected the product" + i);
+			searchResults.ValidateProduct(searchResults.ProductList().get(i));
+			searchResults.AddItemstoCart();
+			testUtil.extentTest.log(LogStatus.INFO, "Added " + i + " to the cart");
+		}
+		
+		cartPage = searchResults.NavigateCartpage();
+		testUtil.extentTest.log(LogStatus.INFO, "Navigated to Cart Page");
+		cartPage.DeleteSecondItem();	
+		testUtil.extentTest.log(LogStatus.INFO, "Removed One Item from the cart");
+		cartPage.ClickProceedtoBuy();
+		testUtil.extentTest.log(LogStatus.INFO, "Proceeded to Buy");
+	}
+	
+	@AfterMethod
+	public void tearDown(ITestResult result) throws IOException {
+		testUtil.TestClosureReport(result);
+		driver.quit();
+	}
+	
+	@AfterTest
+	public void CloseExtent() {
+		testUtil.endReport();
+	}
+
+}

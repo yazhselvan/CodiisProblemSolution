@@ -1,0 +1,51 @@
+package com.codiis.amazon.test;
+
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.codiis.amazon.pages.LaunchPage;
+import com.codiis.amazon.pages.ProductPage;
+import com.codiis.amazon.pages.SearchResultsPage;
+import com.codiis.amazon.pages.SignInPage;
+import com.codiis.amazon.testBase.testBase;
+
+public class LaunchPageTest extends testBase {
+	
+	LaunchPage launchPage;
+	SignInPage signInPage;
+	SearchResultsPage searchResults;
+	ProductPage productPage;
+	
+	public LaunchPageTest() {
+		super();
+	}
+	
+	@BeforeMethod
+	public void setUp() {
+		Initialization();
+	}
+	
+	@Test
+	public void ValidateSignIn() {
+		launchPage = new LaunchPage();
+		signInPage = launchPage.NavigateSignIn();
+		signInPage.NavigateHomePage(prop.getProperty("username"), prop.getProperty("password"));
+		launchPage.getUserName();
+		searchResults = launchPage.SearchProduct(prop.getProperty("SearchItem"));
+		searchResults.SoryByExpensive();
+		searchResults.ClickSeeMore();
+		searchResults.SelectBrand("Titan").click();
+		searchResults.SelectPrinceRange("Over ₹20,000");
+		searchResults.ValidateProduct("Titan");
+		productPage = searchResults.NavigateProductPage();
+		productPage.ClickAddToCart();
+	}
+	
+	@AfterMethod
+	public void tearDown() {
+		driver.quit();
+	}
+
+}

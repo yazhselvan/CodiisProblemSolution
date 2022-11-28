@@ -1,0 +1,79 @@
+package com.codiis.amazon.pages;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.Assert;
+
+import com.codiis.amazon.testBase.testBase;
+
+public class SearchResultsPage extends testBase {
+	
+	@FindBy(id="s-result-sort-select")
+	WebElement SortByFilter;
+	
+	@FindBy(xpath = "//span[text()='See more']")
+	WebElement SeeMoreExpander;
+	
+	@FindBy(xpath = "//div[@id = 'priceRefinements']/ul[1]")
+	WebElement PriceList;
+	
+	@FindBy(xpath = "//div[@id = 'priceRefinements']/ul[1]/li")
+	List<WebElement> PriceRange;
+	
+	@FindBy(xpath = "(//span[text()='RESULTS']/ancestor::div/following::div/div[contains(@cel_widget_id,'MAIN-SEARCH_RESULTS')]//span[@class='a-price-whole'])[1]")
+	WebElement PriceOfFirstProduct;
+	
+	public SearchResultsPage() {
+		PageFactory.initElements(driver, this);
+	}
+	
+	public void ClickSeeMore() {
+		SeeMoreExpander.click();
+	}
+	
+	public WebElement SelectBrand(String BrandName) {
+		String BrandCheckbox = "//span[text()='" + BrandName + "']/ancestor::span[@class='a-list-item'][1]//i[@class='a-icon a-icon-checkbox']";
+		By brandNameSelect = By.xpath(BrandCheckbox);
+		WebElement BrandNameSelect = driver.findElement(brandNameSelect);
+		return BrandNameSelect;
+	}
+	
+	public void SelectPrinceRange(String Range) {
+		for (WebElement PriceRangeSelect : PriceRange)
+		{
+			if(PriceRangeSelect.getText().equals(Range)) {
+				PriceRangeSelect.click();
+			}
+		}
+	}
+	
+	public void ValidateProduct(String SelectedBrand) {
+		String PriceofProductOne = "₹" +  PriceOfFirstProduct.getText();
+		String ProductText = driver.findElement(By.xpath
+				("//span[text()='"+PriceofProductOne+"']//ancestor::div[@class='sg-col-inner']/div[@class]//h5/span")).getText();
+		Assert.assertEquals(SelectedBrand, ProductText);
+	}
+	
+	public ProductPage NavigateProductPage() {
+		String oldTab = driver.getWindowHandle();
+		PriceOfFirstProduct.click();
+		ArrayList<String> newTab = new ArrayList<String>(driver.getWindowHandles());
+		newTab.remove(oldTab);
+		driver.switchTo().window(newTab.get(0));
+		return new ProductPage();
+	}
+	
+	public void SoryByExpensive() {
+		Select select = new Select(SortByFilter);
+		select.selectByVisibleText("Price: High to Low");
+	}
+	
+	
+
+}
